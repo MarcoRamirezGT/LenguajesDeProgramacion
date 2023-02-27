@@ -7,7 +7,7 @@ from Transition import Transition
 class Thompson(object):
     #Clase para automatas finitos no deterministas
     #Operadores
-	op = ["(","*","+","|",".",")"]
+	op = ["(","*","+","|","."]
 
 	def __init__(self, initialState,finalState,transitions):
         #estado inicial
@@ -102,7 +102,6 @@ class Thompson(object):
 		new_transition2 = Transition(1,self.finalState+2,"epsilon") #transicion epsilon de nuevo estado inicial al nuevo estado final
 		new_transition3 = Transition(self.finalState+1,self.initialState+1, "epsilon") #transicion epsilon de regreso
 		new_transition4 = Transition(self.finalState+1,self.finalState+2,"epsilon") #transicion epsilon al estado final nuevo
-		'''inserta nuevas transiciones '''
 		new_transitions.append(new_transition1)
 		new_transitions.append(new_transition2)
 		new_transitions.append(new_transition3)

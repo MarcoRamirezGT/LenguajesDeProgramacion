@@ -3,7 +3,7 @@ import os
 from pythonds.basic.stack import Stack
 from Transition import Transition
 from Thompson import Thompson
-
+from re import search	
 #Clase para expresiones regulares
 class RegularExpresion(object):
 	
@@ -60,11 +60,13 @@ def infixToPostfix(infixexpr):
     prec["."] = 3
     prec["|"] = 2
     prec["("] = 1
+   
     opStack = Stack()
     postfixList = []
 	#Definimos los tokens que se van a encontrar en la expresion regular obviamente separando los tokens de los operadores. 
     for token in infixexpr:
-        if token in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" or token in "abcdefghijklmnopqrstuvwyz" or token in "0123456789" or token in "?<>":
+        
+        if token in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" or token in "abcdefghijklmnopqrstuvxwyz" or token in "0123456789" or token in "ε:;'" or token in '"':
             postfixList.append(token)
         elif token == '(':
             opStack.push(token)
@@ -122,17 +124,80 @@ def ponPuntos(re):
 			aux += re[i]
 	return aux
 
+def agregar_parentesis(expr):
+    stack = []
+    for char in expr:
+        if char == '(':
+            stack.append(char)
+        elif char == ')':
+            if len(stack) > 0 and stack[-1] == '(':
+                stack.pop()
+            else:
+                stack.append(char)
+    while len(stack) > 0:
+        if stack[-1] == '(':
+            expr += ')'
+        else:
+            expr = '(' + expr
+        stack.pop()
+    return expr
 
+   
 if __name__ == '__main__':
-	print("digraph AFN{")
-	print("rankdir=LR; \n node[shape = circle];")
-	regexp = "(a*|b*)c"
-	re = RegularExpresion(regexp)
 	
-	thompson = re.re_to_Thompson()
-	thompson.printTransitions()
+	regexp = input("Ingrese la expresion regular: ")
+	print(regexp)
+	if "ε" in regexp:
+		regexp = regexp.replace('ε','e')
+		re = RegularExpresion(regexp)
+		thompson = re.re_to_Thompson()
+		thompson.printTransitions()
+		os.system("dot -Tgif Thompson.gv > Thompson.gif")
+	if "?" in regexp:
+		print('La expresion regular contiene un simbolo de interrogacion, por lo que se reemplazo por |e')
+		regexp = regexp.replace('?','|e)')
+		regexp = agregar_parentesis(regexp)
 
+		if "+" in regexp:
+			print('La expresion regular contiene un simbolo de mas, por lo que se reemplazo por concatenacion')
+			regexp= agregar_parentesis(regexp)
+			print(regexp)
+			re = RegularExpresion(regexp)
+			thompson = re.re_to_Thompson()
+			thompson.printTransitions()
+   
+   
+		print(regexp)
+		re = RegularExpresion(regexp)
+		thompson = re.re_to_Thompson()
+		thompson.printTransitions()
+
+		
+		
+		os.system("dot -Tgif Thompson.gv > Thompson.gif")
+	if "+" in regexp:
+		print('La expresion regular contiene un simbolo de mas, por lo que se reemplazo por concatenacion')
+		
+		print(regexp)
+		regexp = agregar_parentesis(regexp)
+		re = RegularExpresion(regexp)
+		thompson = re.re_to_Thompson()
+		thompson.printTransitions()
+
+		
+		os.system("dot -Tgif Thompson.gv > Thompson.gif")
+	else:
+		regexp = ponPuntos(regexp)
+		regexp = agregar_parentesis(regexp)
+		print(regexp)	
+		re = RegularExpresion(regexp)
 	
-	print("}")
-	os.system("dot -Tpng Thompson.gv > Thompson.png")
-	
+		thompson = re.re_to_Thompson()
+		thompson.printTransitions()
+
+		
+		os.system("dot -Tgif Thompson.gv > Thompson.gif")
+
+   	
+		
+		
